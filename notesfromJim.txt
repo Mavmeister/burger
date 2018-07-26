@@ -1,0 +1,6 @@
+// planning this application requires some basic steps:
+    1) component structure
+    2) state (data) - ingredients, user, cost
+    3) component vs Containers - stateless, functional vs. stateful class components 
+
+

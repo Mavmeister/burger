@@ -1,0 +1,151 @@
+import React, { Component } from 'react'
+import ReturnsPropsChildren from '../../HOC/wrapper'
+
+import Modal from '../../components/UI/Modal/Modal';
+import OrderSummary from '../../components/OrderSummary/OrderSummary'
+
+import Meat from '../../components/Meatpile/Meat'
+import Controls from '../../components/Meatpile/Controls/Controls'
+import Price from '../../components/Meatpile/Price/Price'
+
+const INGREDIENT_PRICES = {
+    salad: 0.5,
+    cheese: 1,
+    meat: 1.5,
+    bacon: 0.72
+}
+
+class MeatBuilder extends Component {
+    // constructor(props) {
+    //     super(props);
+    //     this.state = {...}
+    // }
+    state = {
+        ingredients: {
+            salad: 0,
+            cheese: 0,
+            meat: 0,
+            slush: 0,
+            bacon: 0
+        },
+        totalPrice: 0,
+        totalIngredientCount: 0,
+        tax: 0,
+        date: null,
+        isPurchasable: false,
+        isPurchasing: false
+    }
+    componentDidMount (){
+    }
+
+    purchaseHandler = () => {
+        this.setState({
+            isPurchasing: true
+        })
+    }
+
+    purchaseCancelHandler = () => {
+        this.setState({
+            isPurchasing: false
+        })
+    }
+
+    updatePurchaseState = (ingredients) => {
+        const sum = Object.keys(ingredients)
+            .map(key => {
+                return ingredients[key]
+            })
+            .reduce((sum, element) => {
+                console.log(sum + element)
+                return sum + element;
+            }, 0)
+        this.setState({
+            totalIngredientCount: sum,
+            isPurchasable: sum > 0
+        })
+    }
+
+    addIngredientHandler = (type) => {
+        console.log('adding', type)
+        // TODO: shrink this code
+        const oldCount = this.state.ingredients[type]
+        const updatedCount = oldCount + 1
+        const updatedIngredients = {
+            ...this.state.ingredients,
+        }
+        updatedIngredients[type] = updatedCount;
+
+        const priceAdd = INGREDIENT_PRICES[type]
+        const oldPrice = this.state.totalPrice;
+        const newPrice = oldPrice + priceAdd;
+        this.setState({
+            totalPrice: newPrice,
+            ingredients: updatedIngredients
+        })
+        this.updatePurchaseState(updatedIngredients)
+    }
+
+    removeIngredientHandler = (type) => {
+        console.log('removing', type)
+        // TODO: shrink this code
+        const oldCount = this.state.ingredients[type]
+
+        // dont allow removal
+        if (oldCount <= 0) { return }
+
+        const updatedCount = oldCount - 1
+        const updatedIngredients = {
+            ...this.state.ingredients,
+        }
+        updatedIngredients[type] = updatedCount;
+
+        const priceDeduction = INGREDIENT_PRICES[type]
+        const oldPrice = this.state.totalPrice;
+        const newPrice = oldPrice - priceDeduction;
+        this.setState({
+            totalPrice: newPrice,
+            ingredients: updatedIngredients
+        })
+        this.updatePurchaseState(updatedIngredients)
+    }
+
+
+    render () {
+        const disabledInfo = {
+            ...this.state.ingredients
+        }
+
+        // sets {cheese: false, etc} if the value is below 1
+        for (let key in disabledInfo){
+            disabledInfo[key] = disabledInfo[key] < 1;
+        }
+
+        return (
+        <ReturnsPropsChildren >
+            <Modal 
+                show={this.state.isPurchasing}
+                modalClose={this.purchaseCancelHandler}>
+                <OrderSummary 
+                    ingredients={this.state.ingredients}
+                    price={this.state.totalPrice}
+                    ingredientCount={this.state.totalIngredientCount}
+                 />
+            </Modal>
+            <Meat ingredients={this.state.ingredients} />
+            <Price 
+                price={this.state.totalPrice}
+                ingredientCount={this.state.totalIngredientCount} />
+            <Controls 
+                ingredientAdded={this.addIngredientHandler}
+                ingredientRemoved={this.removeIngredientHandler}
+                disabled={disabledInfo}
+                isPurchasable={this.state.isPurchasable}
+                purchaseHandler={this.purchaseHandler}
+            />
+            <div> Map View </div>
+        </ReturnsPropsChildren >
+        )
+    }
+}
+
+export default MeatBuilder;
