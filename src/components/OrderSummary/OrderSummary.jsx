@@ -3,6 +3,7 @@ import React from 'react';
 import ReturnsPropsChildren from '../../HOC/wrapper'
 
 import Price from '../Meatpile/Price/Price'
+import Button from '../UI/Button/Button'
 
 const orderSummary = (props) => {
     const ingredientSummary = Object.keys(props.ingredients)
@@ -21,9 +22,9 @@ const orderSummary = (props) => {
             <ul>
                 {ingredientSummary}
             </ul>
-            <p>Continue to Checkout?</p>
-            <button>Continue</button>
-            <button>Cancel</button>
+            <p> <strong> Continue to Checkout? </strong></p>
+            <Button buttonType="Danger" clicked={props.cancelClicked}> Cancel </Button>
+            <Button buttonType="Success" clicked={props.continueClicked}> Continue </Button>
             <Price price={props.price} ingredientCount={props.ingredientCount}/>
         </ReturnsPropsChildren>
     )

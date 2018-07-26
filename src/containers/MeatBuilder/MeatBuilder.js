@@ -15,6 +15,22 @@ const INGREDIENT_PRICES = {
     bacon: 0.72
 }
 
+const initialState = {
+    ingredients: {
+        salad: 0,
+        cheese: 0,
+        meat: 0,
+        slush: 0,
+        bacon: 0
+    },
+    totalPrice: 0,
+    totalIngredientCount: 0,
+    tax: 0,
+    date: null,
+    isPurchasable: false,
+    isPurchasing: false
+}
+
 class MeatBuilder extends Component {
     // constructor(props) {
     //     super(props);
@@ -38,10 +54,15 @@ class MeatBuilder extends Component {
     componentDidMount (){
     }
 
-    purchaseHandler = () => {
+    purchasingHandler = () => {
         this.setState({
             isPurchasing: true
         })
+    }
+
+    purchaseContinueHandler = () => {
+        console.log('Purchased!')
+        this.setState(initialState)
     }
 
     purchaseCancelHandler = () => {
@@ -109,7 +130,6 @@ class MeatBuilder extends Component {
         this.updatePurchaseState(updatedIngredients)
     }
 
-
     render () {
         const disabledInfo = {
             ...this.state.ingredients
@@ -129,6 +149,8 @@ class MeatBuilder extends Component {
                     ingredients={this.state.ingredients}
                     price={this.state.totalPrice}
                     ingredientCount={this.state.totalIngredientCount}
+                    continueClicked={this.purchaseContinueHandler}
+                    cancelClicked={this.purchaseCancelHandler}
                  />
             </Modal>
             <Meat ingredients={this.state.ingredients} />
@@ -140,7 +162,7 @@ class MeatBuilder extends Component {
                 ingredientRemoved={this.removeIngredientHandler}
                 disabled={disabledInfo}
                 isPurchasable={this.state.isPurchasable}
-                purchaseHandler={this.purchaseHandler}
+                purchaseHandler={this.purchasingHandler}
             />
             <div> Map View </div>
         </ReturnsPropsChildren >
