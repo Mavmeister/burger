@@ -2,14 +2,14 @@ import React from 'react';
 
 import ReturnsPropsChildren from '../../HOC/wrapper'
 
-import Price from '../Meatpile/Price/Price'
+import Price from '../Burger/Price/Price'
 import Button from '../UI/Button/Button'
 
 const orderSummary = (props) => {
     const ingredientSummary = Object.keys(props.ingredients)
         .map(key => {
             return <li key={key}>
-                    <span style={{textTransform: 'capitalize'}}>{key}:</span> 
+                    <span style={{textTransform: 'capitalize'}}>{key}:  </span> 
                     {props.ingredients[key]}
                    </li>
     })

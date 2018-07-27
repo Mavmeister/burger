@@ -2,14 +2,15 @@ import React from 'react';
 import ReturnsPropsChildren from '../../HOC/wrapper';
 import classes from './Layout.css'
 
+import Toolbar from '../Navigation/Toolbar/Toolbar'
+import SideDrawer from '../Navigation/SideDrawer/SideDrawer'
+
 const Layout = (props) => (
     // what should the app look like
     <ReturnsPropsChildren>
       <div className={classes.header}>
-        toolbar
-        header
-        form
-        backdrop
+        <Toolbar />
+        <SideDrawer />
       </div> 
   
       <main className={classes.content}>

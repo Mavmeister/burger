@@ -4,15 +4,16 @@ import ReturnsPropsChildren from '../../HOC/wrapper'
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/OrderSummary/OrderSummary'
 
-import Meat from '../../components/Meatpile/Meat'
-import Controls from '../../components/Meatpile/Controls/Controls'
-import Price from '../../components/Meatpile/Price/Price'
+import Meat from '../../components/Burger/Meat'
+import Controls from '../../components/Burger/Controls/Controls'
+import Price from '../../components/Burger/Price/Price'
 
 const INGREDIENT_PRICES = {
     salad: 0.5,
     cheese: 1,
     meat: 1.5,
-    bacon: 0.72
+    bacon: 0.72,
+    slush: 2.54
 }
 
 const initialState = {
@@ -36,21 +37,8 @@ class MeatBuilder extends Component {
     //     super(props);
     //     this.state = {...}
     // }
-    state = {
-        ingredients: {
-            salad: 0,
-            cheese: 0,
-            meat: 0,
-            slush: 0,
-            bacon: 0
-        },
-        totalPrice: 0,
-        totalIngredientCount: 0,
-        tax: 0,
-        date: null,
-        isPurchasable: false,
-        isPurchasing: false
-    }
+    state = initialState;
+
     componentDidMount (){
     }
 
