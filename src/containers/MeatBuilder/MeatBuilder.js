@@ -13,7 +13,7 @@ const INGREDIENT_PRICES = {
     cheese: 1,
     meat: 1.5,
     bacon: 0.72,
-    slush: 2.54
+    pickles: 2.54
 }
 
 const initialState = {
@@ -21,7 +21,7 @@ const initialState = {
         salad: 0,
         cheese: 0,
         meat: 0,
-        slush: 0,
+        pickles: 0,
         bacon: 0
     },
     totalPrice: 0,
@@ -127,9 +127,12 @@ class MeatBuilder extends Component {
         for (let key in disabledInfo){
             disabledInfo[key] = disabledInfo[key] < 1;
         }
-
+        
+        // Modal is now conditionally rendering, as is OrderSummary, 
+        // because it is a child of Modal. lifecycyle hooks control this
         return (
         <ReturnsPropsChildren >
+
             <Modal 
                 show={this.state.isPurchasing}
                 modalClose={this.purchaseCancelHandler}>
@@ -152,7 +155,6 @@ class MeatBuilder extends Component {
                 isPurchasable={this.state.isPurchasable}
                 purchaseHandler={this.purchasingHandler}
             />
-            <div> Map View </div>
         </ReturnsPropsChildren >
         )
     }

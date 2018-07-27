@@ -55,18 +55,6 @@
     box-shadow: inset -1px -3px #c9c9c9;
   }
 
-  .Slush {
-    width: 15%;
-    height: 15%;
-    color: green;
-    position: absolute;
-    background-color: white;
-    left: 30%;
-    top: 50%;
-    border-radius: 40%;
-    transform: rotate(-20deg);
-    box-shadow: inset -2px -3px #c9c9c9;
-}
   .Seeds2 {
     width: 10%;
     height: 15%;
@@ -122,4 +110,12 @@
     height: 3%;
     background: linear-gradient(#bf3813, #c45e38);
     margin: 2% auto;
+}
+
+.Pickles {
+    width: 90%;
+    height: 4.5%;
+    margin: 2% auto;
+    background: linear-gradient(green, orange);
+    border-radius: 20px;
 }

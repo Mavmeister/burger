@@ -8,7 +8,7 @@ const listOfControls = [
     {label: 'Bacon', type: 'bacon'},
     {label: 'Cheese', type: 'cheese'},
     {label: 'Meat', type: 'meat'},
-    {label: 'Slush', type: 'slush'}
+    {label: 'Pickles', type: 'pickles'}
 ]
 
 const Controls = (props) => {

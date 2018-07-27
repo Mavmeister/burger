@@ -17,9 +17,7 @@ class SingleIngredient extends Component {
                 ingredient = (
                     <div className={classes.BreadTop}>
                       <div className={classes.Seeds2}></div>
-                      <div className={classes.BreadTop}></div>
                       <div className={classes.Seeds1}></div>                
-                      <div className={classes.BreadTop}></div>
                     </div>
                 )
                 break;
@@ -39,8 +37,8 @@ class SingleIngredient extends Component {
             case ('salad'):
                 ingredient = <div className={classes.Salad}> </div>
                 break;            
-            case ('slush'):
-                ingredient = <div className={classes.Slush}> </div>
+            case ('pickles'):
+                ingredient = <div className={classes.Pickles}> </div>
                 break;     
             default:
                 ingredient = null;                  
