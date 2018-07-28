@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import ReturnsPropsChildren from '../../HOC/wrapper'
+import axios from 'axios'
 
 import Modal from '../../components/UI/Modal/Modal';
+import Spinner from '../../components/UI/Spinner/Spinner'
 import OrderSummary from '../../components/OrderSummary/OrderSummary'
 
 import Meat from '../../components/Burger/Meat'
@@ -16,6 +18,8 @@ const INGREDIENT_PRICES = {
     pickles: 2.54
 }
 
+const URL = 'https://burgerville-bc30a.firebaseio.com/'
+
 const initialState = {
     ingredients: {
         salad: 0,
@@ -28,8 +32,8 @@ const initialState = {
     totalIngredientCount: 0,
     tax: 0,
     date: null,
-    isPurchasable: false,
-    isPurchasing: false
+    isPurchasing: false,
+    loading: false
 }
 
 class MeatBuilder extends Component {
@@ -40,6 +44,15 @@ class MeatBuilder extends Component {
     state = initialState;
 
     componentDidMount (){
+        console.log('setting up...')
+        // this.setState({loading: false, isPurchasing: false})
+    }
+
+    timer(type){
+        setTimeout(() => {
+            console.log("IM DONE!");
+            this.setState({loading: false, isPurchasing: false})
+        }, 1800)
     }
 
     purchasingHandler = () => {
@@ -49,8 +62,35 @@ class MeatBuilder extends Component {
     }
 
     purchaseContinueHandler = () => {
-        console.log('Purchased!')
-        this.setState(initialState)
+        this.setState({loading: true})
+        const order = {
+            orderNumber: Math.floor(Math.random()* 1000) + 1,
+            ingredients: this.state.ingredients,
+            // use server side prices for security in future
+            price: this.state.totalPrice,
+            totalIngredientCount: this.state.totalIngredientCount,
+            customer: {
+                firstName: 'John',
+                lastName: 'Smith',
+                address: {
+                    street: '523 Adams Ct',
+                    zip: '33322',
+                    country: 'USA'
+                },
+                email: 'jeff@bridges.com',
+                date: new Date()
+            },
+            options: {
+                delivery: 'fast',
+                driver: 'Sam',
+                complete: false
+            }
+        }
+        console.log('Purchased!', order)
+        axios.post(`${URL}/orders.json`, order)
+            .then(response => console.log("RES", response))
+            .then(this.timer())
+            .catch(error => console.log(error))
     }
 
     purchaseCancelHandler = () => {
@@ -127,22 +167,24 @@ class MeatBuilder extends Component {
         for (let key in disabledInfo){
             disabledInfo[key] = disabledInfo[key] < 1;
         }
+
+        let orderSummary = <OrderSummary 
+        ingredients={this.state.ingredients}
+        price={this.state.totalPrice}
+        ingredientCount={this.state.totalIngredientCount}
+        continueClicked={this.purchaseContinueHandler}
+        cancelClicked={this.purchaseCancelHandler}/>
+
+        if (this.state.loading){orderSummary = <Spinner />}
         
         // Modal is now conditionally rendering, as is OrderSummary, 
         // because it is a child of Modal. lifecycyle hooks control this
         return (
         <ReturnsPropsChildren >
-
             <Modal 
                 show={this.state.isPurchasing}
                 modalClose={this.purchaseCancelHandler}>
-                <OrderSummary 
-                    ingredients={this.state.ingredients}
-                    price={this.state.totalPrice}
-                    ingredientCount={this.state.totalIngredientCount}
-                    continueClicked={this.purchaseContinueHandler}
-                    cancelClicked={this.purchaseCancelHandler}
-                 />
+                {orderSummary}
             </Modal>
             <Meat ingredients={this.state.ingredients} />
             <Price 

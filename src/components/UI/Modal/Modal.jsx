@@ -14,11 +14,11 @@ class modal extends Component {
     // or if we changed state in modal, we'd need to check for 
     // other props changing
     shouldComponentUpdate(nextProps, nextState){
-        return nextProps.show !== this.props.show 
+        return nextProps.show !== this.props.show
+         || nextProps.children !== this.props.children
     }
 
     componentWillUpdate(){
-        console.log('Modal re-rendering');
     }
 
     render(){

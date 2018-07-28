@@ -1,7 +1,7 @@
 import React from 'react'
 
 import classes from './Meat.css';
-import BurgerIngredient from './MeatIngredients/BurgerIngredient'
+import BurgerIngredient from './MeatIngredients/MeatIngredient'
 
 const Meat = (props) => {
     // turn object to array for props

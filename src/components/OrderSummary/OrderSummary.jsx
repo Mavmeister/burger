@@ -10,7 +10,6 @@ import Button from '../UI/Button/Button'
 class orderSummary extends Component {
     
     componentWillUpdate(){
-        console.log('Order Summary will update')
     }
 
     render(){
@@ -36,10 +35,6 @@ class orderSummary extends Component {
             </ReturnsPropsChildren>
         )
     }
-
-
-
-
 }
 
 export default orderSummary;
