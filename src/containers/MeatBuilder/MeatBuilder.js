@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import ReturnsPropsChildren from '../../HOC/wrapper'
+import ErrorHandler from '../../HOC/errorHandler'
 import axios from 'axios'
+
+import utilities from '../../utils/utils';
 
 import Modal from '../../components/UI/Modal/Modal';
 import Spinner from '../../components/UI/Spinner/Spinner'
@@ -33,7 +36,7 @@ const initialState = {
     tax: 0,
     date: null,
     isPurchasing: false,
-    loading: false
+    loading: false,
 }
 
 class MeatBuilder extends Component {
@@ -48,11 +51,10 @@ class MeatBuilder extends Component {
         // this.setState({loading: false, isPurchasing: false})
     }
 
-    timer(type){
+    timer(){
         setTimeout(() => {
-            console.log("IM DONE!");
             this.setState({loading: false, isPurchasing: false})
-        }, 1800)
+        }, 1000)
     }
 
     purchasingHandler = () => {
@@ -90,7 +92,7 @@ class MeatBuilder extends Component {
         axios.post(`${URL}/orders.json`, order)
             .then(response => console.log("RES", response))
             .then(this.timer())
-            .catch(error => console.log(error))
+            .catch(error => console.log("ERROR", error))
     }
 
     purchaseCancelHandler = () => {
@@ -180,7 +182,7 @@ class MeatBuilder extends Component {
         // Modal is now conditionally rendering, as is OrderSummary, 
         // because it is a child of Modal. lifecycyle hooks control this
         return (
-        <ReturnsPropsChildren >
+        <ReturnsPropsChildren>
             <Modal 
                 show={this.state.isPurchasing}
                 modalClose={this.purchaseCancelHandler}>
@@ -197,9 +199,9 @@ class MeatBuilder extends Component {
                 isPurchasable={this.state.isPurchasable}
                 purchaseHandler={this.purchasingHandler}
             />
-        </ReturnsPropsChildren >
+        </ReturnsPropsChildren>
         )
     }
 }
 
-export default MeatBuilder;
+export default ErrorHandler(MeatBuilder, axios);
