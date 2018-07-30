@@ -13,24 +13,12 @@ import Meat from '../../components/Burger/Meat'
 import Controls from '../../components/Burger/Controls/Controls'
 import Price from '../../components/Burger/Price/Price'
 
-const INGREDIENT_PRICES = {
-    salad: 0.5,
-    cheese: 1,
-    meat: 1.5,
-    bacon: 0.72,
-    pickles: 2.54
-}
+let INGREDIENT_PRICES = {}
 
 const URL = 'https://burgerville-bc30a.firebaseio.com/'
 
 const initialState = {
-    ingredients: {
-        salad: 0,
-        cheese: 0,
-        meat: 0,
-        pickles: 0,
-        bacon: 0
-    },
+    ingredients: null,
     totalPrice: 0,
     totalIngredientCount: 0,
     tax: 0,
@@ -47,14 +35,27 @@ class MeatBuilder extends Component {
     state = initialState;
 
     componentDidMount (){
-        console.log('setting up...')
-        // this.setState({loading: false, isPurchasing: false})
+        console.log('setting up...(gathering ingredient info)')
+        axios.get('https://burgerville-bc30a.firebaseio.com/ingredients.json')
+            .then(response => {
+                this.setState({ingredients: response.data})
+            })
+            .catch(error => {
+                console.log(error);
+            })
+        axios.get('https://burgerville-bc30a.firebaseio.com/ingredientPrices.json')
+            .then(response => {
+                INGREDIENT_PRICES = response.data
+            })
+            .catch(error => {
+                console.log(error);
+            })
     }
 
-    timer(){
+    fakeLoadingTimer(){
         setTimeout(() => {
             this.setState({loading: false, isPurchasing: false})
-        }, 1000)
+        }, 2000)
     }
 
     purchasingHandler = () => {
@@ -91,7 +92,7 @@ class MeatBuilder extends Component {
         console.log('Purchased!', order)
         axios.post(`${URL}/orders.json`, order)
             .then(response => console.log("RES", response))
-            .then(this.timer())
+            .then(this.fakeLoadingTimer())
             .catch(error => console.log("ERROR", error))
     }
 
@@ -170,15 +171,34 @@ class MeatBuilder extends Component {
             disabledInfo[key] = disabledInfo[key] < 1;
         }
 
-        let orderSummary = <OrderSummary 
-        ingredients={this.state.ingredients}
-        price={this.state.totalPrice}
-        ingredientCount={this.state.totalIngredientCount}
-        continueClicked={this.purchaseContinueHandler}
-        cancelClicked={this.purchaseCancelHandler}/>
+        let orderSummary = null;
 
-        if (this.state.loading){orderSummary = <Spinner />}
+        let burger = <Spinner />
         
+        if (this.state.ingredients){
+            burger = (
+                <ReturnsPropsChildren>
+                <Meat ingredients={this.state.ingredients} />
+                <Price 
+                price={this.state.totalPrice}
+                ingredientCount={this.state.totalIngredientCount} />
+                <Controls 
+                ingredientAdded={this.addIngredientHandler}
+                ingredientRemoved={this.removeIngredientHandler}
+                disabled={disabledInfo}
+                isPurchasable={this.state.isPurchasable}
+                purchaseHandler={this.purchasingHandler}/>
+                </ReturnsPropsChildren>)
+                orderSummary = (
+                    <OrderSummary 
+                    ingredients={this.state.ingredients}
+                    price={this.state.totalPrice}
+                    ingredientCount={this.state.totalIngredientCount}
+                    continueClicked={this.purchaseContinueHandler}
+                    cancelClicked={this.purchaseCancelHandler}/>)
+                }
+                
+        if (this.state.loading){orderSummary = <Spinner />}
         // Modal is now conditionally rendering, as is OrderSummary, 
         // because it is a child of Modal. lifecycyle hooks control this
         return (
@@ -188,17 +208,7 @@ class MeatBuilder extends Component {
                 modalClose={this.purchaseCancelHandler}>
                 {orderSummary}
             </Modal>
-            <Meat ingredients={this.state.ingredients} />
-            <Price 
-                price={this.state.totalPrice}
-                ingredientCount={this.state.totalIngredientCount} />
-            <Controls 
-                ingredientAdded={this.addIngredientHandler}
-                ingredientRemoved={this.removeIngredientHandler}
-                disabled={disabledInfo}
-                isPurchasable={this.state.isPurchasable}
-                purchaseHandler={this.purchasingHandler}
-            />
+            {burger}
         </ReturnsPropsChildren>
         )
     }
