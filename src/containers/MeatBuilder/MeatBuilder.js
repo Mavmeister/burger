@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import ReturnsPropsChildren from '../../HOC/wrapper'
 import ErrorHandler from '../../HOC/errorHandler'
 import axios from 'axios'
+import { connect } from 'react-redux'
 
 import utilities from '../../utils/utils';
 
@@ -12,13 +13,20 @@ import OrderSummary from '../../components/OrderSummary/OrderSummary'
 import Meat from '../../components/Burger/Meat'
 import Controls from '../../components/Burger/Controls/Controls'
 import Price from '../../components/Burger/Price/Price'
+import * as actions from '../../actions/builder'
 
 let INGREDIENT_PRICES = {}
 
 const URL = 'https://burgerville-bc30a.firebaseio.com/'
 
 const initialState = {
-    ingredients: null,
+    ingredients: {
+        salad: 0,
+        bacon: 0,
+        meat: 1,
+        cheese: 0,
+        pickle: 0
+    },
     totalPrice: 0,
     totalIngredientCount: 0,
     tax: 0,
@@ -35,21 +43,21 @@ class MeatBuilder extends Component {
     state = initialState;
 
     componentDidMount (){
-        console.log('setting up...(gathering ingredient info)')
-        axios.get('https://burgerville-bc30a.firebaseio.com/ingredients.json')
-            .then(response => {
-                this.setState({ingredients: response.data})
-            })
-            .catch(error => {
-                console.log(error);
-            })
-        axios.get('https://burgerville-bc30a.firebaseio.com/ingredientPrices.json')
-            .then(response => {
-                INGREDIENT_PRICES = response.data
-            })
-            .catch(error => {
-                console.log(error);
-            })
+        // console.log('setting up...(gathering ingredient info)')
+        // axios.get('https://burgerville-bc30a.firebaseio.com/ingredients.json')
+        //     .then(response => {
+        //         this.setState({ingredients: response.data})
+        //     })
+        //     .catch(error => {
+        //         console.log(error);
+        //     })
+        // axios.get('https://burgerville-bc30a.firebaseio.com/ingredientPrices.json')
+        //     .then(response => {
+        //         INGREDIENT_PRICES = response.data
+        //     })
+        //     .catch(error => {
+        //         console.log(error);
+        //     })
     }
 
     fakeLoadingTimer(){
@@ -163,7 +171,7 @@ class MeatBuilder extends Component {
 
     render () {
         const disabledInfo = {
-            ...this.state.ingredients
+            ...this.props.ings
         }
 
         // sets {cheese: false, etc} if the value is below 1
@@ -175,27 +183,27 @@ class MeatBuilder extends Component {
 
         let burger = <Spinner />
         
-        if (this.state.ingredients){
+        if (this.props.ings){
             burger = (
                 <ReturnsPropsChildren>
-                <Meat ingredients={this.state.ingredients} />
+                <Meat ingredients={this.props.ings} />
                 <Price 
-                price={this.state.totalPrice}
-                ingredientCount={this.state.totalIngredientCount} />
+                    price={this.state.totalPrice}
+                    ingredientCount={this.state.totalIngredientCount} />
                 <Controls 
-                ingredientAdded={this.addIngredientHandler}
-                ingredientRemoved={this.removeIngredientHandler}
-                disabled={disabledInfo}
-                isPurchasable={this.state.isPurchasable}
-                purchaseHandler={this.purchasingHandler}/>
+                    ingredientAdded={this.props.onIngredientAdded}
+                    ingredientRemoved={this.props.onIngredientRemoved}
+                    disabled={disabledInfo}
+                    isPurchasable={this.state.isPurchasable}
+                    purchaseHandler={this.purchasingHandler}/>
                 </ReturnsPropsChildren>)
                 orderSummary = (
                     <OrderSummary 
-                    ingredients={this.state.ingredients}
-                    price={this.state.totalPrice}
-                    ingredientCount={this.state.totalIngredientCount}
-                    continueClicked={this.purchaseContinueHandler}
-                    cancelClicked={this.purchaseCancelHandler}/>)
+                        ingredients={this.props.ings}
+                        price={this.state.totalPrice}
+                        ingredientCount={this.state.totalIngredientCount}
+                        continueClicked={this.purchaseContinueHandler}
+                        cancelClicked={this.purchaseCancelHandler}/>)
                 }
                 
         if (this.state.loading){orderSummary = <Spinner />}
@@ -213,5 +221,23 @@ class MeatBuilder extends Component {
         )
     }
 }
+const mapStateToProps = state => {
+    console.log(state.ingredients)
+    return {
+        ings: state.ingredients.ingredients
+    }
+}
+const mapDispatchToProps = dispatch => {
+    return {
+        onIngredientAdded: (ingredientName) => dispatch({
+            type: actions.ADD_INGREDIENT,
+            name: ingredientName
+         }),
+        onIngredientRemoved: (ingredientName) => dispatch({
+            type: actions.REMOVE_INGREDIENT,
+            name: ingredientName
+         })
+    }
+}
 
-export default ErrorHandler(MeatBuilder, axios);
+export default connect(mapStateToProps, mapDispatchToProps)(ErrorHandler(MeatBuilder, axios));
